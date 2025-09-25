@@ -1,24 +1,27 @@
 pipeline {
     agent any
+    tools {
+    maven 'Maven 3.9.11'
+    }
     stages {
         stage('Checkout') {
             steps {
-                git 'https://github.com/your-username/your-repo.git'
+                git 'https://github.com/Ristler/Week6OTP'
             }
         }
         stage('Build') {
             steps {
-                bat 'mvn clean install' // sh for linux and ios
+                sh 'mvn clean install' // sh for linux and ios
             }
         }
         stage('Test') {
             steps {
-                bat 'mvn test'
+                sh 'mvn test'
             }
         }
         stage('Code Coverage') {
             steps {
-                bat 'mvn jacoco:report'
+                sh 'mvn jacoco:report'
             }
         }
         stage('Publish Test Results') {
