@@ -1,5 +1,15 @@
 pipeline {
     agent any
+     environment {
+                PATH = "C:\\Program Files\\Docker\\Docker\\resources\\bin;${env.PATH}"
+
+                // Define Docker Hub credentials ID
+                DOCKERHUB_CREDENTIALS_ID = ''
+                // Define Docker Hub repository name
+                DOCKERHUB_REPO = ''
+                // Define Docker image tag
+                DOCKER_IMAGE_TAG = 'latest'
+            }
     tools {
         maven 'Maven 3.9.11'
     }
