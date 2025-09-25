@@ -1,9 +1,9 @@
 pipeline {
     agent any
     environment {
-        DOCKERHUB_CREDENTIALS_ID = 'docker_hub' // Jenkins Docker credentials ID
-        DOCKERHUB_REPO = 'ristler/week6tp1'     // Docker Hub repository
-        DOCKER_IMAGE_TAG = 'latest'              // Docker image tag
+        DOCKERHUB_CREDENTIALS_ID = 'docker_hub' // Replace with your Jenkins Docker credentials ID
+        DOCKERHUB_REPO = 'ristler/week6tp1'           // Replace with your Docker Hub repository
+        DOCKER_IMAGE_TAG = 'latest'   // Docker image tag
     }
     tools {
         maven 'Maven 3.9.11'
@@ -12,17 +12,6 @@ pipeline {
         stage('Checkout') {
             steps {
                 git 'https://github.com/Ristler/Week6OTP'
-            }
-        }
-
-        stage('Docker Login') {
-            steps {
-                withCredentials([usernamePassword(
-                    credentialsId: "${DOCKERHUB_CREDENTIALS_ID}",
-                    usernameVariable: 'DOCKER_USER',
-                    passwordVariable: 'DOCKER_PASS')]) {
-                    sh 'echo $DOCKER_PASS | /Applications/Docker.app/Contents/Resources/bin/docker login -u $DOCKER_USER --password-stdin'
-                }
             }
         }
 
@@ -68,8 +57,10 @@ pipeline {
                     credentialsId: "${DOCKERHUB_CREDENTIALS_ID}",
                     usernameVariable: 'DOCKER_USER',
                     passwordVariable: 'DOCKER_PASS')]) {
-                    sh 'echo $DOCKER_PASS | /Applications/Docker.app/Contents/Resources/bin/docker login -u $DOCKER_USER --password-stdin'
-                    sh '/Applications/Docker.app/Contents/Resources/bin/docker push $DOCKERHUB_REPO:$DOCKER_IMAGE_TAG'
+                    sh '''
+                        /Applications/Docker.app/Contents/Resources/bin/docker login -u $DOCKER_USER -p $DOCKER_PASS
+                        /Applications/Docker.app/Contents/Resources/bin/docker push $DOCKERHUB_REPO:$DOCKER_IMAGE_TAG
+                    '''
                 }
             }
         }
