@@ -1,9 +1,9 @@
 pipeline {
     agent any
     environment {
-        DOCKERHUB_CREDENTIALS_ID = ''
-        DOCKERHUB_REPO = ''
-        DOCKER_IMAGE_TAG = 'latest'
+        DOCKERHUB_CREDENTIALS_ID = '' // Replace with your Jenkins Docker credentials ID
+        DOCKERHUB_REPO = ''           // Replace with your Docker Hub repository
+        DOCKER_IMAGE_TAG = 'latest'   // Docker image tag
     }
     tools {
         maven 'Maven 3.9.11'
@@ -14,36 +14,43 @@ pipeline {
                 git 'https://github.com/Ristler/Week6OTP'
             }
         }
+
         stage('Build') {
             steps {
                 sh 'mvn clean install'
             }
         }
+
         stage('Test') {
             steps {
                 sh 'mvn test'
             }
         }
+
         stage('Code Coverage') {
             steps {
                 sh 'mvn jacoco:report'
             }
         }
+
         stage('Publish Test Results') {
             steps {
                 junit '**/target/surefire-reports/*.xml'
             }
         }
+
         stage('Publish Coverage Report') {
             steps {
                 jacoco()
             }
         }
+
         stage('Build Docker Image') {
             steps {
                 sh '/Applications/Docker.app/Contents/Resources/bin/docker build -t $DOCKERHUB_REPO:$DOCKER_IMAGE_TAG .'
             }
         }
+
         stage('Push Docker Image to Docker Hub') {
             steps {
                 withCredentials([usernamePassword(
