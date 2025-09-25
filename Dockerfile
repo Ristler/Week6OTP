@@ -1,4 +1,4 @@
-FROM --platform=linux/amd64 maven:latest
+FROM maven:latest
 LABEL authors="daniel"
 
 
