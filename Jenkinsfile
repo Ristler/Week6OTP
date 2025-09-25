@@ -1,7 +1,7 @@
 pipeline {
     agent any
     tools {
-    maven 'Maven 3.9.11'
+        maven 'Maven 3.9.11'
     }
     stages {
         stage('Checkout') {
@@ -11,7 +11,7 @@ pipeline {
         }
         stage('Build') {
             steps {
-                sh 'mvn clean install' // sh for linux and ios
+                sh 'mvn clean install'
             }
         }
         stage('Test') {
@@ -36,7 +36,7 @@ pipeline {
         }
        stage('Build Docker Image') {
            steps {
-               sh 'docker build -t $DOCKERHUB_REPO:$DOCKER_IMAGE_TAG .'
+               sh '/Applications/Docker.app/Contents/Resources/bin/docker build -t $DOCKERHUB_REPO:$DOCKER_IMAGE_TAG .'
            }
        }
 
@@ -47,8 +47,8 @@ pipeline {
                    usernameVariable: 'DOCKER_USER',
                    passwordVariable: 'DOCKER_PASS')]) {
                    sh '''
-                       docker login -u $DOCKER_USER -p $DOCKER_PASS
-                       docker push $DOCKERHUB_REPO:$DOCKER_IMAGE_TAG
+                       /Applications/Docker.app/Contents/Resources/bin/docker login -u $DOCKER_USER -p $DOCKER_PASS
+                       /Applications/Docker.app/Contents/Resources/bin/docker push $DOCKERHUB_REPO:$DOCKER_IMAGE_TAG
                    '''
                }
            }
