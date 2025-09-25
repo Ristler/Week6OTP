@@ -1,10 +1,5 @@
-FROM maven:latest
-LABEL authors="daniel"
-
-
+FROM maven:3.9.0-openjdk-17
 WORKDIR /app
-COPY pom.xml /app
 COPY . /app
 RUN mvn package
 CMD ["java", "-jar", "target/timecal.jar"]
-
