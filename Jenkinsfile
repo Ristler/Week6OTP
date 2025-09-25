@@ -57,10 +57,12 @@ pipeline {
                     credentialsId: "${DOCKERHUB_CREDENTIALS_ID}",
                     usernameVariable: 'DOCKER_USER',
                     passwordVariable: 'DOCKER_PASS')]) {
-                    // Login without trying to store credentials
-                    sh 'echo $DOCKER_PASS | /Applications/Docker.app/Contents/Resources/bin/docker login -u $DOCKER_USER --password-stdin'
-                    // Push image
-                    sh '/Applications/Docker.app/Contents/Resources/bin/docker push $DOCKERHUB_REPO:$DOCKER_IMAGE_TAG'
+                    sh '''
+                        # Use a temporary Docker config directory to bypass macOS credential helper
+                        export DOCKER_CONFIG=$(mktemp -d)
+                        echo $DOCKER_PASS | /Applications/Docker.app/Contents/Resources/bin/docker login -u $DOCKER_USER --password-stdin
+                        /Applications/Docker.app/Contents/Resources/bin/docker push $DOCKERHUB_REPO:$DOCKER_IMAGE_TAG
+                    '''
                 }
             }
         }
