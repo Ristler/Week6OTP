@@ -1,9 +1,9 @@
 pipeline {
     agent any
     environment {
-        DOCKERHUB_CREDENTIALS_ID = 'docker_hub' // Jenkins Docker credentials ID
-        DOCKERHUB_REPO = 'ristler/week6tp1'     // Docker Hub repository
-        DOCKER_IMAGE_TAG = 'latest'              // Docker image tag
+        DOCKERHUB_CREDENTIALS_ID = 'docker_hub'   // Your Jenkins Docker Hub credentials ID
+        DOCKERHUB_REPO = 'ristler/week6tp1'       // Docker Hub repository
+        DOCKER_IMAGE_TAG = 'latest'               // Docker image tag
     }
     tools {
         maven 'Maven 3.9.11'
@@ -45,22 +45,20 @@ pipeline {
             }
         }
 
-        stage('Build Docker Image') {
-            steps {
-                sh '/Applications/Docker.app/Contents/Resources/bin/docker build -t $DOCKERHUB_REPO:$DOCKER_IMAGE_TAG .'
-            }
-        }
-
-        stage('Push Docker Image to Docker Hub') {
+        stage('Build & Push Docker Image') {
             steps {
                 withCredentials([usernamePassword(
                     credentialsId: "${DOCKERHUB_CREDENTIALS_ID}",
                     usernameVariable: 'DOCKER_USER',
                     passwordVariable: 'DOCKER_PASS')]) {
                     sh '''
-                        # Use a temporary Docker config directory to bypass macOS credential helper
-                        export DOCKER_CONFIG=$(mktemp -d)
-                        echo $DOCKER_PASS | /Applications/Docker.app/Contents/Resources/bin/docker login -u $DOCKER_USER --password-stdin
+                        # Login to Docker Hub using credentials from Jenkins
+                        /Applications/Docker.app/Contents/Resources/bin/docker login -u $DOCKER_USER --password-stdin <<< "$DOCKER_PASS"
+
+                        # Build the Docker image
+                        /Applications/Docker.app/Contents/Resources/bin/docker build -t $DOCKERHUB_REPO:$DOCKER_IMAGE_TAG .
+
+                        # Push the Docker image to Docker Hub
                         /Applications/Docker.app/Contents/Resources/bin/docker push $DOCKERHUB_REPO:$DOCKER_IMAGE_TAG
                     '''
                 }
